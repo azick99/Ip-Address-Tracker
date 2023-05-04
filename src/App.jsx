@@ -1,23 +1,28 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import MapComponent from './components/Map'
 import IpInfoContainer from './components/IpInfoContainer'
 import arrow from './images/icon-arrow.svg'
+import IP_MAP_API_KEY from './apiKey'
 import './App.scss'
 
 function App() {
   const [ipData, setIpData] = useState([])
-  const [text, setText] = useState('')
-  const [status, setStatus] = useState('typing')
+  const [inputState, setInputState] = useState({
+    text: '',
+    status: 'typing',
+  })
+
+  const { text, status } = inputState
 
   const handleChange = (e) => {
     const result = e.target.value
-    setText(result)
+    setInputState({ ...inputState, text: result, status: 'typing' })
   }
+  const API_URL = useMemo(() => {
+    return `https://geo.ipify.org/api/v2/country,city?apiKey=${IP_MAP_API_KEY}&ipAddress=${text}`
+  }, [text])
 
-  const API_URL = `http://localhost:8000/map?ipAddress=${text}`
-
-
-  async function fetchData(url) {
+  const fetchData = useCallback(async (url) => {
     try {
       const response = await fetch(url)
       const data = await response.json()
@@ -25,31 +30,28 @@ function App() {
     } catch (error) {
       console.log(error)
     }
-  }
-
-
+  }, [])
+  console.log(status)
   async function handleSubmit(e) {
     e.preventDefault()
-
+    const { text } = inputState
     if (text.length) {
-      setStatus('submitting')
       try {
+        setInputState({ ...inputState, status: 'submitting' })
         fetchData(API_URL)
-        setStatus('success')
       } catch (err) {
-        setStatus('typing')
+        setInputState({ ...inputState, status: 'typing' })
       }
-    }
-    if (!text.length) {
+    } else {
       alert('Ip field is empty')
     }
+    setInputState({ ...inputState, status: 'success' })
   }
 
   useEffect(() => {
-    if (status === 'success') {
+    if (inputState.status === 'success') {
       fetchData(API_URL)
     }
-    return () => setStatus(null)
   }, [])
 
   const noData = ipData.length === 0
