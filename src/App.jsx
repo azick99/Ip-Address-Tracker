@@ -2,16 +2,16 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import MapComponent from './components/Map'
 import IpInfoContainer from './components/IpInfoContainer'
 import arrow from './images/icon-arrow.svg'
-import IP_MAP_API_KEY from './apiKey'
 import './App.scss'
 
 function App() {
+  const apiKey = process.env.REACT_APP_MAP_API_KEY || 'default_value_if_not_set'
   const [ipData, setIpData] = useState([])
   const [inputState, setInputState] = useState({
     text: '',
     status: 'typing',
   })
-
+  console.log(process.env)
   const { text, status } = inputState
 
   const handleChange = (e) => {
@@ -19,7 +19,7 @@ function App() {
     setInputState({ ...inputState, text: result, status: 'typing' })
   }
   const API_URL = useMemo(() => {
-    return `https://geo.ipify.org/api/v2/country,city?apiKey=${IP_MAP_API_KEY}&ipAddress=${text}`
+    return `https://geo.ipify.org/api/v2/country,city?apiKey=${apiKey}&ipAddress=${text}`
   }, [text])
 
   const fetchData = useCallback(async (url) => {
@@ -31,6 +31,7 @@ function App() {
       console.log(error)
     }
   }, [])
+
   console.log(status)
   async function handleSubmit(e) {
     e.preventDefault()
