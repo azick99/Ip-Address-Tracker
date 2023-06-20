@@ -53,10 +53,20 @@ function App() {
     }
   }, []);
 
-  const noData = ipData.length === 0;
+  const noData = Object.keys(ipData).length === 0;
   const errorCode = ipData.code === 422;
   return (
     <div className="App">
+      <div className='ip-address-con'>
+        <p>Ip Samples:</p>
+        <p>
+          <span>Uzbekistan, Fergana</span>: 94.141.76.130 <br />
+          <span>Kazakhstan, Almaty</span>: 2.132.105.65 <br />
+          <span>United States, New York</span>: 64.94.215.221
+          <br />
+          <span>Poland, Warsaw</span>: 83.24.213.173 <br />
+        </p>
+      </div>
       <form onSubmit={handleSubmit}>
         <h1 className="fs-700 text-white text-medium">IP Address Tracker</h1>
         <div className="input-con">
