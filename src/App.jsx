@@ -17,7 +17,7 @@ function App() {
     setInputState({ ...inputState, text: result, status: 'typing' });
   };
   const API_URL = useMemo(() => {
-    return `/.netlify/functions/mapApiKey?ipAddress=${text}`;
+    return `/map?ipAddress=${text}`;
   }, [text]);
 
   const fetchData = useCallback(async (url) => {
