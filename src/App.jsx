@@ -1,74 +1,62 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
-import MapComponent from './components/Map'
-import IpInfoContainer from './components/IpInfoContainer'
-import arrow from './images/icon-arrow.svg'
-import './App.scss'
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import MapComponent from './components/Map';
+import IpInfoContainer from './components/IpInfoContainer';
+import arrow from './images/icon-arrow.svg';
+import './App.scss';
 
 function App() {
-  const apiKey = process.env.REACT_APP_MAP_API_KEY || 'default_value_if_not_set'
-  const [ipData, setIpData] = useState([])
+  const [ipData, setIpData] = useState([]);
   const [inputState, setInputState] = useState({
     text: '',
     status: 'typing',
-  })
-  console.log(process.env)
-  const { text, status } = inputState
+  });
+  const { text, status } = inputState;
 
   const handleChange = (e) => {
-    const result = e.target.value
-    setInputState({ ...inputState, text: result, status: 'typing' })
-  }
+    const result = e.target.value;
+    setInputState({ ...inputState, text: result, status: 'typing' });
+  };
   const API_URL = useMemo(() => {
-    return `https://geo.ipify.org/api/v2/country,city?apiKey=${apiKey}&ipAddress=${text}`
-  }, [text])
+    return `/map?ipAddress=${text}`;
+  }, [text]);
 
   const fetchData = useCallback(async (url) => {
     try {
-      const response = await fetch(url)
-      const data = await response.json()
-      setIpData(data)
+      const response = await fetch(url, { mode: 'cors' });
+      const data = await response.json();
+      setIpData(data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }, [])
+  }, []);
 
-  console.log(status)
+  console.log(status);
   async function handleSubmit(e) {
-    e.preventDefault()
-    const { text } = inputState
+    e.preventDefault();
+    const { text } = inputState;
     if (text.length) {
       try {
-        setInputState({ ...inputState, status: 'submitting' })
-        fetchData(API_URL)
+        setInputState({ ...inputState, status: 'submitting' });
+        fetchData(API_URL);
       } catch (err) {
-        setInputState({ ...inputState, status: 'typing' })
+        setInputState({ ...inputState, status: 'typing' });
       }
     } else {
-      alert('Ip field is empty')
+      alert('Ip field is empty');
     }
-    setInputState({ ...inputState, status: 'success' })
+    setInputState({ ...inputState, status: 'success' });
   }
 
   useEffect(() => {
     if (inputState.status === 'success') {
-      fetchData(API_URL)
+      fetchData(API_URL);
     }
-  }, [])
+  }, []);
 
-  const noData = ipData.length === 0
-  const errorCode = ipData.code === 422
+  const noData = ipData.length === 0;
+  const errorCode = ipData.code === 422;
   return (
     <div className="App">
-      <div className="ip-address-con text-white">
-        <p>Ip Samples:</p>
-        <p>
-          <span>Uzbekistan, Fergana</span>: 94.141.76.130 <br />
-          <span>Kazakhstan, Almaty</span>: 2.132.105.65 <br />
-          <span>United States, New York</span>: 64.94.215.221
-          <br />
-          <span>Poland, Warsaw</span>: 83.24.213.173 <br />
-        </p>
-      </div>
       <form onSubmit={handleSubmit}>
         <h1 className="fs-700 text-white text-medium">IP Address Tracker</h1>
         <div className="input-con">
@@ -92,7 +80,7 @@ function App() {
           <IpInfoContainer
             ipData={ipData}
             noData={noData}
-            errorCod={errorCode}
+            errorCode={errorCode}
           />
         </div>
       </form>
@@ -105,7 +93,7 @@ function App() {
         <MapComponent lat={ipData.location.lat} lng={ipData.location.lng} />
       )}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
