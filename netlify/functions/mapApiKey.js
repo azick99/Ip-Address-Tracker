@@ -1,4 +1,5 @@
 const axios = require('axios');
+require('dotenv').config()
 
 exports.handler = async (event) => {
   const { ipAddress } = event.queryStringParameters;
@@ -10,12 +11,18 @@ exports.handler = async (event) => {
     const response = await axios.get(API_URL);
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(response.data),
     };
   } catch (error) {
     console.log(error);
     return {
       statusCode: 500,
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ error: 'An error occurred while fetching data', code: 422 }),
     };
   }
